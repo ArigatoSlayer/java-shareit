@@ -23,6 +23,8 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public ItemDto createItem(Item item, Long userId) {
+        userRepository.getUserById(userId);
+        item.setOwner(userId);
         item.setId(++id);
         itemMap.put(item.getId(), item);
         return ItemMapper.toItemDto(item);
@@ -31,29 +33,27 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public ItemDto updateItem(Item item, Long userId, Long itemId) {
         userRepository.getUserById(userId);
-        if (item.getOwner() != userId) {
+        Item oldItem = itemMap.get(itemId);
+        if (!oldItem.getOwner().equals(userId)) {
             throw new NotValidException("Вы не являетесь владельцем данного предмета");
         }
-        Item oldItem = itemMap.get(itemId);
         if (item.getName() != null) oldItem.setName(item.getName());
         if (item.getDescription() != null) oldItem.setDescription(item.getDescription());
-        if (item.getOwner() != null) oldItem.setOwner(item.getOwner());
         if (item.getAvailable() != null) oldItem.setAvailable(item.getAvailable());
         return ItemMapper.toItemDto(oldItem);
     }
 
     @Override
     public List<ItemDto> getByUserId(Long userId) {
-        List<Item> allItems = new ArrayList<>();
-        allItems.addAll(itemMap.values());
-        return allItems.stream().filter(item -> item.getOwner() == userId)
+        return itemMap.values().stream()
+                .filter(item -> item.getOwner().equals(userId))
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public ItemDto getItemById(Long id) {
-        return null;
+        return ItemMapper.toItemDto(itemMap.get(id));
     }
 
     @Override
@@ -63,6 +63,11 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public void deleteItem(Long itemId, Long userId) {
-
+        userRepository.getUserById(userId);
+        if (itemMap.get(itemId).getOwner().equals(userId)) {
+            itemMap.remove(itemId);
+        } else {
+            throw new NotValidException("Вы не являетесь владельцем данного предмета");
+        }
     }
 }

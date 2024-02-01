@@ -32,8 +32,7 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @RequestMapping(value = "/{id}",
-    method = RequestMethod.PATCH)
+    @PatchMapping("/{id}")
     public UserDto update(@PathVariable Long id, @RequestBody User user) {
         log.info("Запрос на обновление пользователь пользователя c id = {}", id);
         return userService.updateUser(id, user);

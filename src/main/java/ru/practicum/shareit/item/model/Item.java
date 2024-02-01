@@ -2,19 +2,22 @@ package ru.practicum.shareit.item.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Item {
     private Long id;
     @NotBlank
     private String name;
     @NotBlank
     private String description;
+    @NotEmpty
     private boolean available;
-    @NotBlank
     private Long owner;
 
     public Item(Long id, String name, String description, boolean available) {
@@ -24,7 +27,7 @@ public class Item {
         this.available = available;
     }
 
-    public Boolean getAvailable(){
+    public Boolean getAvailable() {
         return available;
     }
 }
