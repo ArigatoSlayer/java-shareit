@@ -60,7 +60,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     private void isUniqueEmail(User newUser) {
         for (User user : userMap.values()) {
-            if (user.getId() == null) {
+            if (newUser.getId() == null) {
                 if (user.getEmail().equals(newUser.getEmail())) {
                     throw new NotValidException("Пользователь с email " + newUser.getEmail() + " Уже существует");
                 }
