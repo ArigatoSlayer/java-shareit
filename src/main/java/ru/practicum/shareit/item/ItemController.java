@@ -36,8 +36,8 @@ public class ItemController {
         return itemService.getItemById(itemId);
     }
 
-    @GetMapping("/{userId}")
-    public List<ItemDto> getAllItemsByUser(@PathVariable Long userId) {
+    @GetMapping
+    public List<ItemDto> getAllItemsByUser(@RequestHeader(USER_HEADER) Long userId) {
         return itemService.getByUserId(userId);
     }
 

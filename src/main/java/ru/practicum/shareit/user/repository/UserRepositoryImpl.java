@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.NotValidException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -20,7 +21,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public UserDto createUser(User user) {
-        checkEmail(user);
+        checkEmailForCreate(user);
         user.setId(++id);
         userMap.put(user.getId(), user);
         log.info("Создан пользователь с id = {}", user.getId());
@@ -28,27 +29,28 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public UserDto updateUser(Long id, User user) {
-        getUserById(id);
+    public UserDto updateUser(Long userId, User user) {
+        checkUser(userId);
+        User originalUserCopy = userMap.get(userId);
+        if (user.getName() != null) originalUserCopy.setName(user.getName());
         if (user.getEmail() != null) {
-            checkEmail(user);
-            userMap.get(id).setEmail(user.getEmail());
-        } else {
-            userMap.get(id).setEmail(userMap.get(id).getEmail());
+            checkEmailForUpdate(user, userId);
+            originalUserCopy.setEmail(user.getEmail());
         }
-        if (user.getName() != null) userMap.get(id).setName(user.getName());
-        log.info("Обновлен пользователь с id = {}", user.getId());
-        return UserMapper.toUserDto(userMap.get(id));
+        userMap.put(userId, originalUserCopy);
+        return UserMapper.toUserDto(userMap.get(userId));
     }
 
     @Override
     public UserDto getUserById(Long id) {
+        checkUser(id);
         log.info("Получен пользователь с id = {}", id);
         return UserMapper.toUserDto(userMap.get(id));
     }
 
     @Override
     public void deleteUserById(Long id) {
+        checkUser(id);
         log.info("Удален пользователь с id = {}", id);
         userMap.remove(id);
     }
@@ -62,12 +64,29 @@ public class UserRepositoryImpl implements UserRepository {
                 .collect(Collectors.toList());
     }
 
-    private void checkEmail(User user) {
-        boolean isEmailNotUnique = userMap.values().stream()
-                .anyMatch(thisUser -> thisUser.getEmail().equals(user.getEmail())
-                        && !thisUser.getId().equals(user.getId()));
-        if (isEmailNotUnique) {
-            throw new NotValidException("Пользователь с такой электронной почтой уже существует");
+    private void checkEmailForCreate(User user) {
+        for (User originalUser : userMap.values()) {
+            if (user.getEmail().equals(originalUser.getEmail())) {
+                throw new NotValidException(String.format("пользователь с таким Email = %s уже существует"
+                        , user.getEmail()));
+            }
+        }
+    }
+
+    private void checkEmailForUpdate(User user, Long id) {
+        for (User originalUser : userMap.values()) {
+            if (user.getEmail().equals(originalUser.getEmail())) {
+                if (!originalUser.getId().equals(id)) {
+                    throw new NotValidException(String.format("пользователь с таким Email = %s уже существует"
+                            , user.getEmail()));
+                }
+            }
+        }
+    }
+
+    private void checkUser(Long id) {
+        if (!userMap.containsKey(id)) {
+            throw new NotFoundException(String.format("id = %s не найдено", id));
         }
     }
 }
