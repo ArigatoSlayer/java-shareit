@@ -67,8 +67,7 @@ public class UserRepositoryImpl implements UserRepository {
     private void checkEmailForCreate(User user) {
         for (User originalUser : userMap.values()) {
             if (user.getEmail().equals(originalUser.getEmail())) {
-                throw new NotValidException(String.format("пользователь с таким Email = %s уже существует"
-                        , user.getEmail()));
+                throw new NotValidException(String.format("пользователь с таким Email = %s уже существует", user.getEmail()));
             }
         }
     }
@@ -77,8 +76,7 @@ public class UserRepositoryImpl implements UserRepository {
         for (User originalUser : userMap.values()) {
             if (user.getEmail().equals(originalUser.getEmail())) {
                 if (!originalUser.getId().equals(id)) {
-                    throw new NotValidException(String.format("пользователь с таким Email = %s уже существует"
-                            , user.getEmail()));
+                    throw new NotValidException(String.format("пользователь с таким Email = %s уже существует", user.getEmail()));
                 }
             }
         }
