@@ -57,7 +57,13 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<ItemDto> findByString(Long userId, String subString) {
-        return null;
+        String normalString = subString.toLowerCase().strip();
+        return itemMap.values()
+                .stream()
+                .filter(item -> item.getAvailable().equals(true))
+                .filter(item -> item.getName().contains(normalString))
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
