@@ -20,7 +20,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public UserDto createUser(User user) {
-        isUniqueEmail(user);
+        checkEmail(user);
         user.setId(++id);
         userMap.put(user.getId(), user);
         log.info("Создан пользователь с id = {}", user.getId());
@@ -29,9 +29,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public UserDto updateUser(Long id, User user) {
-        isUniqueEmail(user);
-        if (user.getEmail() != null) userMap.get(id).setEmail(user.getEmail());
-        if (user.getEmail() != null) userMap.get(id).setEmail(user.getEmail());
+        getUserById(id);
+        if (user.getEmail() != null) {
+            checkEmail(user);
+            userMap.get(id).setEmail(user.getEmail());
+        } else {
+            userMap.get(id).setEmail(userMap.get(id).getEmail());
+        }
         if (user.getName() != null) userMap.get(id).setName(user.getName());
         log.info("Обновлен пользователь с id = {}", user.getId());
         return UserMapper.toUserDto(userMap.get(id));
@@ -58,17 +62,12 @@ public class UserRepositoryImpl implements UserRepository {
                 .collect(Collectors.toList());
     }
 
-    private void isUniqueEmail(User newUser) {
-        for (User user : userMap.values()) {
-            if (newUser.getId() == null) {
-                if (user.getEmail().equals(newUser.getEmail())) {
-                    throw new NotValidException("Пользователь с email " + newUser.getEmail() + " Уже существует");
-                }
-            } else {
-                if (!newUser.getId().equals(user.getId()) && user.getEmail().equals(newUser.getEmail())) {
-                    throw new NotValidException("Пользователь с email " + newUser.getEmail() + " Уже существует");
-                }
-            }
+    private void checkEmail(User user) {
+        boolean isEmailNotUnique = userMap.values().stream()
+                .anyMatch(thisUser -> thisUser.getEmail().equals(user.getEmail())
+                        && !thisUser.getId().equals(user.getId()));
+        if (isEmailNotUnique) {
+            throw new NotValidException("Пользователь с такой электронной почтой уже существует");
         }
     }
 }

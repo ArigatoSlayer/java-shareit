@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,12 +59,18 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public List<ItemDto> findByString(Long userId, String subString) {
         String normalString = subString.toLowerCase().strip();
-        return itemMap.values()
-                .stream()
-                .filter(item -> item.getAvailable().equals(true))
-                .filter(item -> item.getName().contains(normalString))
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        List<ItemDto> findItems = new ArrayList<>();
+        if (subString.isBlank()) {
+            return findItems;
+        } else {
+            findItems.addAll(itemMap.values()
+                    .stream()
+                    .filter(item -> item.getAvailable().equals(true))
+                    .filter(item -> item.getName().toLowerCase().contains(normalString))
+                    .map(ItemMapper::toItemDto)
+                    .collect(Collectors.toList()));
+            return findItems;
+        }
     }
 
     @Override
