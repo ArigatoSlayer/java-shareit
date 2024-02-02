@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -8,9 +8,10 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ItemService {
-    @Autowired
-    ItemRepository itemRepository;
+
+    private final ItemRepository itemRepository;
 
     public List<ItemDto> getByUserId(Long userId) {
         return itemRepository.getByUserId(userId);

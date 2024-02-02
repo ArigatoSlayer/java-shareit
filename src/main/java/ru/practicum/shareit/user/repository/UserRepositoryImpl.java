@@ -11,6 +11,7 @@ import ru.practicum.shareit.user.model.UserDto;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -32,7 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
     public UserDto updateUser(Long userId, User user) {
         checkUser(userId);
         User originalUserCopy = userMap.get(userId);
-        if (user.getName() != null) originalUserCopy.setName(user.getName());
+        Optional.ofNullable(user.getName()).ifPresent(originalUserCopy::setName);
         if (user.getEmail() != null) {
             checkEmailForUpdate(user, userId);
             originalUserCopy.setEmail(user.getEmail());

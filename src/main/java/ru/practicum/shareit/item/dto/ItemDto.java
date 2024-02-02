@@ -9,9 +9,5 @@ public class ItemDto {
     private Long id;
     private String name;
     private String description;
-    private boolean available;
-
-    public Boolean getAvailable() {
-        return available;
-    }
+    private Boolean available;
 }
