@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.comment.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,20 +7,17 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Booking {
+public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
+    String text;
+    @OneToOne
+    User user;
     @OneToOne
     Item item;
-    @ManyToOne
-    User customer;
-    LocalDate start;
-    LocalDate stop;
 }

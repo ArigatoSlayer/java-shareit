@@ -20,7 +20,7 @@ public class ItemService {
     private final UserService userService;
 
     public List<ItemDto> getAllItemByUserId(Long userId) {
-        if (itemRepository.findAll().iterator().next() == null){
+        if (itemRepository.findAll().iterator().next() == null) {
             return new ArrayList<>();
         } else {
             return itemRepository.findItemsByOwnerId(userId)
@@ -58,7 +58,7 @@ public class ItemService {
 
     public List<ItemDto> findBySubstring(Long userId, String text) {
         if (!text.isEmpty()) {
-            return itemRepository.search(text)
+            return itemRepository.search(userId, text)
                     .stream()
                     .map(ItemMapper::toItemDto)
                     .collect(Collectors.toList());

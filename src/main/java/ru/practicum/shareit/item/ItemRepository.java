@@ -13,7 +13,8 @@ public interface ItemRepository extends CrudRepository<Item, Long> {
 
     @Query(value = "select i from Item as i " +
             "where i.available = true " +
-            "and lower(i.name) like lower(concat('%', ?1, '%') ) or " +
-            "lower(i.description) like lower(concat( '%', ?1, '%'))")
-    List<Item> search(String text);
+            "and lower(i.name) like lower(concat('%', ?2, '%') ) or " +
+            "lower(i.description) like lower(concat( '%', ?2, '%')) " +
+            "and i.owner.id != ?1")
+    List<Item> search(Long userID, String text);
 }
