@@ -26,7 +26,7 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Long id) {
         log.info("Запрос на получение пользователя по Id = {}", id);
-        return userService.getUserById(id);
+        return userService.getUserDtoById(id);
     }
 
     @PatchMapping("/{id}")

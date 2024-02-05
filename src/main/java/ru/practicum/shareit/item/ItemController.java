@@ -32,17 +32,17 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemDto getItemById(@PathVariable Long itemId) {
-        return itemService.getItemById(itemId);
+        return itemService.getItemDtoById(itemId);
     }
 
     @GetMapping
     public List<ItemDto> getAllItemsByUser(@RequestHeader(USER_HEADER) Long userId) {
-        return itemService.getByUserId(userId);
+        return itemService.getAllItemByUserId(userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> findItemBySubString(@RequestHeader(USER_HEADER) Long userId,
                                              @RequestParam(name = "text") String subString) {
-        return itemService.findByString(userId, subString);
+        return itemService.findBySubstring(userId, subString);
     }
 }
