@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.ItemAvailabilityException;
@@ -68,29 +69,31 @@ public class BookingServiceImpl implements BookingService {
         userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + bookerId + " не найден"));
 
-        switch (state) {
-            case "CURRENT":
+        BookingState bookingState = BookingState.valueOf(state);
+
+        switch (bookingState) {
+            case CURRENT:
                 return bookingRepository.readAllBookerCurrentBookings(bookerId, LocalDateTime.now())
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
-            case "PAST":
+            case PAST:
                 return bookingRepository.readAllBookerPastBookings(bookerId, LocalDateTime.now())
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
-            case "FUTURE":
+            case FUTURE:
                 return bookingRepository.readAllBookerFutureBookings(bookerId, LocalDateTime.now())
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
-            case "WAITING":
+            case WAITING:
                 return bookingRepository
                         .findAllByBooker_IdAndStatusInOrderByStartDesc(bookerId, List.of(BookingStatus.WAITING))
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
-            case "REJECTED":
+            case REJECTED:
                 return bookingRepository
                         .findAllByBooker_IdAndStatusInOrderByStartDesc(bookerId, List.of(BookingStatus.REJECTED))
                         .stream()
@@ -114,29 +117,30 @@ public class BookingServiceImpl implements BookingService {
                 .map(Item::getId)
                 .collect(Collectors.toList());
 
-        switch (state) {
-            case "CURRENT":
+        BookingState bookingState = BookingState.valueOf(state);
+        switch (bookingState) {
+            case CURRENT:
                 return bookingRepository.readAllOwnerItemsCurrentBookings(userItems, LocalDateTime.now())
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
-            case "PAST":
+            case PAST:
                 return bookingRepository.readAllOwnerItemsPastBookings(userItems, LocalDateTime.now())
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
-            case "FUTURE":
+            case FUTURE:
                 return bookingRepository.readAllOwnerItemsFutureBookings(userItems, LocalDateTime.now())
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
-            case "WAITING":
+            case WAITING:
                 return bookingRepository
                         .findAllByItem_IdInAndStatusInOrderByStartDesc(userItems, List.of(BookingStatus.WAITING))
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
-            case "REJECTED":
+            case REJECTED:
                 return bookingRepository
                         .findAllByItem_IdInAndStatusInOrderByStartDesc(userItems, List.of(BookingStatus.REJECTED))
                         .stream()
